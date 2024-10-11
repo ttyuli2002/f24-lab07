@@ -2,12 +2,16 @@ package AndrewWebServices;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class AndrewWebServicesTest {
-    Database database;
+    // Database database;
+    FakeDatabase database;
     RecSys recommender;
     PromoService promoService;
     AndrewWebServices andrewWebService;
@@ -15,11 +19,15 @@ public class AndrewWebServicesTest {
     @Before
     public void setUp() {
         // You need to use some mock objects here
-        database = new Database(); // We probably don't want to access our real database...
-        recommender = new RecSys();
-        promoService = new PromoService();
+        // database = new Database(); // We probably don't want to access our real database...
+        // recommender = new RecSys();
+        // promoService = new PromoService();
+        database = new FakeDatabase();
+        recommender = Mockito.mock(RecSys.class);
+        promoService = Mockito.mock(PromoService.class);
 
         andrewWebService = new AndrewWebServices(database, recommender, promoService);
+        Mockito.when(recommender.getRecommendation("Scotty")).thenReturn("Animal House");
     }
 
     @Test
@@ -37,12 +45,21 @@ public class AndrewWebServicesTest {
     @Test
     public void testSendEmail() {
         // How should we test sendEmail() when it doesn't have a return value?
-        // Hint: is there something from Mockito that seems useful here?
+        // Test sending a promotional email using the mock promo service
+        String testEmail = "test@example.com";
+        andrewWebService.sendPromoEmail(testEmail);
+
+        // Verify that the mailTo method was called once with the test email
+        verify(promoService, times(1)).mailTo(testEmail);
     }
 
     @Test
     public void testNoSendEmail() {
         // How should we test that no email has been sent in certain situations (like right after logging in)?
-        // Hint: is there something from Mockito that seems useful here?
+        // Log in to the service
+        andrewWebService.logIn("Scotty", 17214);
+
+        // Verify that the mailTo method of promoService was not called after login
+        verify(promoService, times(0)).mailTo(Mockito.anyString());
     }
 }
