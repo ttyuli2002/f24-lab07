@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 public class AndrewWebServicesTest {
     // Database database;
-    FakeDatabase database;
+    Database database;
     RecSys recommender;
     PromoService promoService;
     AndrewWebServices andrewWebService;
@@ -22,7 +22,7 @@ public class AndrewWebServicesTest {
         // database = new Database(); // We probably don't want to access our real database...
         // recommender = new RecSys();
         // promoService = new PromoService();
-        database = new FakeDatabase();
+        database = new InMemoryDatabase();
         recommender = Mockito.mock(RecSys.class);
         promoService = Mockito.mock(PromoService.class);
 
